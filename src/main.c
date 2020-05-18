@@ -27,45 +27,25 @@
 
 
 int main() {
-    /*
-    printf ("%i\n\n", get_number ("Что за число? ", NULL));
-    printf ("%c\n\n", get_key ("Что за символ? ", "qwerty"));
-    printf ("%s\n\n", get_word_caps ("ААА! БОЛЬШОЕ СЛОВО! ", NULL, 256));
-    printf ("%s\n\n", get_line_caps ("ААА! БОЛЬШАЯ СТРОКА! ", NULL, 256));
-    */
-    //print_phone (get_phone (12342, 2, -73128, -13));
-    
-    phone ph_test1 = get_phone(2, 2, -73128, -13);
-    phone ph_test2 = get_phone(8, 962, 221, 3874);
+    book b_test;
+    init_book (&b_test);
 
-    print_phone (ph_test1);
-    printf (" phone_cmp %d\n\n", phone_cmp (ph_test1, ph_test2));
+    add_record (get_record ("Hello", get_phone (8, 912, 001, 0001)), &b_test); 
+    add_record (get_record ("Hello", get_phone (8, 912, 002, 0002)), &b_test); 
 
-    update_phone (&ph_test1, 8, 962, 221, 3874);
-    
-    print_phone (ph_test1);
-    printf (" phone_cmp %d\n\n", phone_cmp (ph_test1, ph_test2));
-    
-    update_phone (&ph_test1, 8, 321, 323, 5321);
+    add_record (get_record ("Alice", get_phone (8, 942, 242, 7854)), &b_test); 
+    add_record (get_record ("Alice", get_phone (8, 912, 002, 2554)), &b_test); 
+    add_record (get_record ("Amigo", get_phone (8, 912, 002, 2554)), &b_test); 
+ 
+    add_record (get_record ("Michael", get_phone (8, 912, 002, 5323)), &b_test); 
+    add_record (get_record ("Alexander", get_phone (8, 912, 002, 9855)), &b_test); 
+    add_record (get_record ("kipr-avtomoyka", get_phone (8, 912, 002, 0505)), &b_test); 
 
+    add_record (get_record ("kipr-avtomoyka", get_phone (8, 912, 002, 0505)), &b_test); 
 
-    record rec_test1 = get_record ("Hello", ph_test1);
-    record rec_test2 = get_record ("Bye", ph_test2);
+    print_book (b_test, 15);
 
-    print_record (rec_test1);
-    printf (" record_cmp %d\n\n", record_cmp (rec_test1, rec_test2)); // 0
-
-    update_record (&rec_test2, "Hello", ph_test1); 
-
-    print_record (rec_test2); 
-    printf (" record_cmp %d\n\n", record_cmp (rec_test1, rec_test2)); // 1
-
-
-    book b_test = {'\0', NULL, NULL, NULL};
-
-
-
-    
-    
+    print_nickname ("Alice", b_test);
+    /* протестировать find_nickname и print_nickname */
     return 0;
 }
