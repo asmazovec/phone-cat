@@ -5,8 +5,7 @@
 #include "consupport.h"
 
 
-char *get_line (const char *prompt, char *current, int size) {
-    assert (size);
+char *get_line (const char *prompt, char *def, char *current, int size) {
     current = (char*) malloc ((size+1)*sizeof (char));
     current[0] = '\0';
     
@@ -17,14 +16,15 @@ char *get_line (const char *prompt, char *current, int size) {
         c = getchar ();
         current[strlen (current)] = c;
     } while (c!='\n' && strlen (current)<size);
-    current[strlen (current)] = '\0';
+
+    if (current[0]=='\n' && def) { return def; }
+    current[strlen (current)-1] = '\0';
 
     return current;
 }
 
 
-char *get_line_caps (const char *prompt , char *current, int size) {
-    assert (size);
+char *get_line_caps (const char *prompt, char *def, char *current, int size) {
     current = (char*) malloc ((size+1)*sizeof (char));
     current[0] = '\0';
     
@@ -35,14 +35,15 @@ char *get_line_caps (const char *prompt , char *current, int size) {
         c = getchar ();
         current[strlen (current)] = toupper (c);
     } while (c!='\n' && strlen (current)<size);
-    current[strlen (current)] = '\0';
+
+    if (current[0]=='\n' && def) { return def; }
+    current[strlen (current)-1] = '\0';
 
     return current;
 }
 
 
-char *get_word (const char *prompt, char *current, int size) {
-    assert (size);
+char *get_word (const char *prompt, char *def, char *current, int size) {
     current = (char*) malloc ((size+1)*sizeof (char));
     current[0] = '\0';
 
@@ -56,14 +57,15 @@ char *get_word (const char *prompt, char *current, int size) {
             while (getchar ()!='\n');
         }
     } while (c!='\n' && c!=' ' && strlen (current)<size);
-    current[strlen (current)] = '\0';
+
+    if (current[0]=='\n' && def) { return def; }
+    current[strlen (current)-1] = '\0';
 
     return current;
 }
 
 
-char *get_word_caps (const char *prompt, char *current, int size) {
-    assert (size);
+char *get_word_caps (const char *prompt, char *def, char *current, int size) {
     current = (char*)malloc ((size+1)*sizeof (char));
     current[0] = '\0';
 
@@ -77,35 +79,55 @@ char *get_word_caps (const char *prompt, char *current, int size) {
             while (getchar ()!='\n');
         }
     } while (c!='\n' && c!=' ' && strlen (current)<size);
-    current[strlen (current)] = '\0';
+
+    if (current[0]=='\n' && def) { return def; }
+    current[strlen (current)-1] = '\0';
     
     return current;
 }
 
 
-char get_key (const char *prompt, const char *purposes) {
+char get_key (const char *prompt, char def, const char *purposes) {
     printf ("%s", prompt);
 
-    char c;
-    scanf ("%c", &c);
+    char c = getchar ();
+    if (c=='\n') {
+        return def; 
+    } 
     while (getchar ()!='\n');
 
     do {
-        if (*purposes==c) 
-            return c; 
+        if (*purposes==c) { return c; } 
     } while (*purposes++);
 
     return '\0';
 }
 
 
-int get_number (const char *prompt, int *current) {
+int get_number (const char *prompt, int min, int max, int def, int *current, int size) {
+    char *line = (char*) malloc ((size+1)*sizeof (char));
+    line[0] = '\0';
+
     printf ("%s", prompt);
-    int tmp;
-    scanf ("%d", &tmp);
-    while (getchar ()!='\n');
 
-    if (current) { *current = tmp; }
+    char c;
+    do {
+        c = getchar ();
+        line[strlen (line)] = c;
+        if (c==' ') {
+            while (getchar ()!='\n');
+        }
+    } while (c!='\n' && c!=' ' && strlen (line)<size);
 
-    return tmp;
+    if (line[0]=='\n') { return def; }
+    line[strlen (line)] = '\0';
+    
+    int out = atoi (line);
+    if (out > max) {
+        return max;
+    } else if (out < min) {
+        return min;
+    }
+
+    return out;
 }

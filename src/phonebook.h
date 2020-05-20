@@ -26,7 +26,7 @@ typedef struct record {
     struct record *next;/// Указатель на следующую запись на странице.
 } record;
 
-/* Структура телефонной книги */
+/* Структура телефонной книги. */
 typedef struct book {
     char character;     /// Буква текущей страницы книги.
     record *node;       /// Первая запись на странице, инициализирует страницу.
@@ -63,15 +63,16 @@ int print_phone (phone current);
 
 
 /* Конструктор записи телефонной книги. */
-record get_record (
+record *get_record (
         char  *name,
-        phone number);
+        phone number); 
 
 /* Редактирует существующую запись. 
  * Возвращает указатель на отредактированную запись.
  * */
 record *update_record (
-        record *current,
+        record *new_record,
+        book *cur_book,
         char   *new_name,
         phone  new_number);
 
@@ -86,7 +87,7 @@ int print_record (record current, int size);
 
 
 /* Инициализирует новую книгу. */
-book *init_book (book *new_book);
+book *init_book (void);
 
 /* Находит страницу, соответствующую первой букве искомой записи в
  * телефонной книге. 
@@ -120,7 +121,7 @@ record *find_record (record required, book cur_book);
 record **find_nickname (char *nickname, book cur_book);
 
 /* Печатает все номера телефона по искомому имени. */
-int print_nickname (char *nickname, book cur_book);
+int print_nickname (char *nickname, book cur_book, int size);
 
 /* Заносит запись в телефонную книгу. 
  * Возвращает указатель на эту запись в книге.
@@ -130,15 +131,18 @@ record *add_record (record current, book *cur_book);
 /* Удаляет запись из телефонной книги. 
  * Если успех, возвращает 0, иначе 1.
  * */
-int delete_record (record *current, book);
+int delete_record (record *removable, book *page);
+
+/* Закрывает книгу, освобождая память. */
+book *close_book (book *cur_book);
 
 /* Загружает телефонную книгу из файла. */
-book load_book (const char *path);
+int upload_book (const char *path, int size, book *new_book);
 
 /* Записывает телефонную книгу на диск. 
  * Если успех, возвращает 0, иначе 1.
  * */
-int write_book (book cur_book);
+int write_book (book cur_book, const char* path);
 
 
 #endif /* PHONEBOOK_H_ */
