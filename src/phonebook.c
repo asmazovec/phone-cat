@@ -185,7 +185,6 @@ int print_nickname (char* nickname, book cur_book, int size) {
     record **list = find_nickname (nickname, cur_book);
     int i = 0;
     while (list[i]) {
-        printf ("%4d :: ", i);
         print_record (*list[i++], size);
         printf ("\n");
     } 
@@ -201,7 +200,6 @@ int print_page (book cur_page, int size) {
         printf ("\n        ");
         pointer = pointer->next;
     }
-    printf ("\n"); 
     return 0;
 }
 
@@ -210,6 +208,7 @@ int print_book (book cur_book, int size) {
     while (pointer->character!='\0') {
         print_page (*pointer, size);
         pointer = pointer->next;
+        if (pointer->character!='\0') { printf ("\n"); }
     }
     return 0;
 }
@@ -280,16 +279,17 @@ int upload_book (const char *path, int size, book *cur_book) {
     int abonent;
 
     char line_record[size];
-    char *nickname = (char*) malloc (size*sizeof (char));
-    if (NULL==nickname) { fclose (load); exit (1); }
+    char *nickname;
+    
 
     char *token;
     while (fgets (line_record, size, load)) {
+        nickname = (char*) malloc (size*sizeof (char)); if (NULL==nickname) { fclose (load); exit (1); }
         token = strtok (line_record, "-"); locale = atoi (token);
         token = strtok (NULL, "-"); service = atoi (token);
         token = strtok (NULL, "-"); provider = atoi (token);
         token = strtok (NULL, " "); abonent = atoi (token);
-        token = strtok (NULL, "\n");
+        token = strtok (NULL, "\n\0");
         strcpy (nickname, token);
         add_record (*get_record (nickname, get_phone (locale, service, provider, abonent)), cur_book);    
     }
@@ -298,24 +298,25 @@ int upload_book (const char *path, int size, book *cur_book) {
     return 0;
 }
 
-book *close_book (book *cur_book) {
+int close_book (book *cur_book) {
     book *cur_page = cur_book->next;
-    record *pointer = cur_page->node;
+    record *cur_record = cur_page->node->next;
+    record *save_next = cur_record->next;
 
-    while (cur_page->character!='\0') {
-        while (cur_page->node->next->nickname[0]!='\0') {
-            while (pointer->next->next->nickname[0]!='\0') {
-                pointer = pointer->next;
-            }
-            free (pointer->next);
-            pointer->next = cur_page->node;
-            pointer = cur_page->node;
+    while (cur_page!=cur_book) {
+        while (cur_record!=cur_page->node) {
+            free (cur_record->nickname);
+            free (cur_record);
+            cur_record = save_next;
+            save_next = cur_record->next;
         }
-        free (cur_page->node);
         cur_page = cur_page->next;
+        free (cur_page->prev->node);
         free (cur_page->prev);
+        cur_record = cur_page->node->next;
+        save_next = cur_record->next;
     }
-    cur_page->next = cur_page;
-    cur_page->prev = cur_page;
-    return cur_page;
+    free (cur_book->node);
+    free (cur_book);
+    return 0;
 }

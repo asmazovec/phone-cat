@@ -42,16 +42,6 @@ phone get_phone (
         int provider,
         int abonent);
 
-/* Редактирует существующий номер. 
- * Возвращает указатель на отредактированный номер.
- * */
-phone *update_phone (
-        phone *cur_phone,
-        int new_locale,
-        int new_service,
-        int new_provider,
-        int new_abonent);
-
 /* Сравнивает номера телефона. 
  * Если одинаковые, возвращает 0, иначе 1.
  * */
@@ -134,7 +124,7 @@ record *add_record (record current, book *cur_book);
 int delete_record (record *removable, book *page);
 
 /* Закрывает книгу, освобождая память. */
-book *close_book (book *cur_book);
+int close_book (book *cur_book);
 
 /* Загружает телефонную книгу из файла. */
 int upload_book (const char *path, int size, book *new_book);

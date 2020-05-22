@@ -5,129 +5,166 @@
 #include "consupport.h"
 
 
-char *get_line (const char *prompt, char *def, char *current, int size) {
-    current = (char*) malloc ((size+1)*sizeof (char));
-    current[0] = '\0';
-    
-    printf ("%s", prompt);
-
-    char c;
-    do {
-        c = getchar ();
-        current[strlen (current)] = c;
-    } while (c!='\n' && strlen (current)<size);
-
-    if (current[0]=='\n' && def) { return def; }
-    current[strlen (current)-1] = '\0';
-
-    return current;
-}
-
-
-char *get_line_caps (const char *prompt, char *def, char *current, int size) {
-    current = (char*) malloc ((size+1)*sizeof (char));
-    current[0] = '\0';
-    
-    printf ("%s", prompt);
-
-    char c;
-    do {
-        c = getchar ();
-        current[strlen (current)] = toupper (c);
-    } while (c!='\n' && strlen (current)<size);
-
-    if (current[0]=='\n' && def) { return def; }
-    current[strlen (current)-1] = '\0';
-
-    return current;
-}
-
-
-char *get_word (const char *prompt, char *def, char *current, int size) {
-    current = (char*) malloc ((size+1)*sizeof (char));
-    current[0] = '\0';
-
-    printf ("%s", prompt);
-
-    char c;
-    do {
-        c = getchar ();
-        current[strlen (current)] = c;
-        if (c==' ') {
-            while (getchar ()!='\n');
-        }
-    } while (c!='\n' && c!=' ' && strlen (current)<size);
-
-    if (current[0]=='\n' && def) { return def; }
-    current[strlen (current)-1] = '\0';
-
-    return current;
-}
-
-
-char *get_word_caps (const char *prompt, char *def, char *current, int size) {
-    current = (char*)malloc ((size+1)*sizeof (char));
-    current[0] = '\0';
-
-    printf ("%s", prompt);
-
-    char c;
-    do {
-        c = getchar ();
-        current[strlen (current)] = toupper (c);
-        if (c==' ') {
-            while (getchar ()!='\n');
-        }
-    } while (c!='\n' && c!=' ' && strlen (current)<size);
-
-    if (current[0]=='\n' && def) { return def; }
-    current[strlen (current)-1] = '\0';
-    
-    return current;
-}
-
-
-char get_key (const char *prompt, char def, const char *purposes) {
-    printf ("%s", prompt);
-
-    char c = getchar ();
-    if (c=='\n') {
-        return def; 
-    } 
-    while (getchar ()!='\n');
-
-    do {
-        if (*purposes==c) { return c; } 
-    } while (*purposes++);
-
+/* Возвращает специальный символ, читая его из стандартного потока
+ * ввода.
+ * Если символ не является специальным, возвращает '\0'.
+ * */
+char get_specific (const char *purpose) {
+    char key = getchar ();
+    while (*purpose) {
+        if (key==*purpose++) { return key; }
+    }
     return '\0';
 }
 
+/* Приглашение к считыванию строки из стандартного потока ввода. 
+ * prompt - приглашение ко вводу,
+ * def - ввод по умолчанию,
+ * length - длина считываемой строки.
+ * */
+char *get_line (const char *prompt, const char *def, int length) {
+    printf ("%s", prompt); // приглашение.
+    char *line = (char*) malloc (length*sizeof (char)); if (NULL==line) { exit (1); } 
 
-int get_number (const char *prompt, int min, int max, int def, int *current, int size) {
-    char *line = (char*) malloc ((size+1)*sizeof (char));
-    line[0] = '\0';
-
-    printf ("%s", prompt);
-
-    char c;
+    int cur_pose = 0; // текущая позиция, по которой ведется запись в строку.
     do {
-        c = getchar ();
-        line[strlen (line)] = c;
-        if (c==' ') {
-            while (getchar ()!='\n');
-        }
-    } while (c!='\n' && c!=' ' && strlen (line)<size);
-
-    if (line[0]=='\n') { return def; }
-    line[strlen (line)] = '\0';
-    
-    int out = atoi (line);
-    if (out > max) {
-        return max;
-    } else if (out < min) {
-        return min;
-    }
-
-    return out;
+        if (cur_pose>=length) { while (getchar ()!='\n'); break; } // достигнут предел для записи.
+        line[cur_pose] = getchar (); 
+    } while (line[cur_pose++]!='\n'); // основное условие завершения строки.
+    if (cur_pose==1) { strcpy (line, def); return line; } // пустой ввод вернет default.
+    line[cur_pose-1] = '\0';  
+    return line;
 }
+
+/* Приглашение к считыванию строки заглавными буквами из стандартного потока ввода. 
+ * prompt - приглашение ко вводу,
+ * def - ввод по умолчанию,
+ * length - длина считываемой строки.
+ * */
+char *get_line_capital (const char *prompt, const char *def, int length) {
+    printf ("%s", prompt); // приглашение.
+    char *line = (char*) malloc (length*sizeof (char)); if (NULL==line) { exit (1); } 
+
+    int cur_pose = 0; // текущая позиция, по которой ведется запись в строку.
+    do {
+        if (cur_pose>=length) { while (getchar ()!='\n'); break; } // достигнут предел для записи.
+        line[cur_pose] = toupper (getchar ()); 
+    } while (line[cur_pose++]!='\n'); // основное условие завершения строки.
+    if (cur_pose==1) { strcpy (line, def); return line; } // пустой ввод вернет default.
+    line[cur_pose-1] = '\0';  
+    return line;
+}
+
+/* Приглашение к считыванию слова до первого пробела из стандартного потока ввода. 
+ * prompt - приглашение ко вводу,
+ * def - значение по умолчанию,
+ * length - длина считываемой строки.
+ * */
+char *get_word (const char *prompt, const char *def, int length) {
+    printf ("%s", prompt); // приглашение.
+    char *line = (char*) malloc (length*sizeof (char)); if (NULL==line) { exit (1); } 
+
+    int cur_pose = 0; // текущая позиция, по которой ведется запись в строку.
+    do {
+        if (cur_pose>=length)      { while (getchar ()!='\n'); break; } // достигнут предел для записи.
+        if (line[cur_pose-1]==' ') { while (getchar ()!='\n'); break; } // достигнут конец слова.
+        line[cur_pose] = getchar (); 
+    } while (line[cur_pose++]!='\n'); // основное условие завершения строки.
+    if (cur_pose==1) { strcpy (line, def); return line; } // пустой ввод вернет default.
+    line[cur_pose-1] = '\0';  
+    return line;
+}
+
+/* Приглашение к считыванию слова до первого пробела из стандартного потока ввода. 
+ * prompt - приглашение ко вводу,
+ * def - значение по умолчанию,
+ * length - длина считываемой строки.
+ * */
+char *get_word_capital (const char *prompt, const char *def, int length) {
+    printf ("%s", prompt); // приглашение.
+    char *line = (char*) malloc (length*sizeof (char)); if (NULL==line) { exit (1); } 
+
+    int cur_pose = 0; // текущая позиция, по которой ведется запись в строку.
+    do {
+        if (cur_pose>=length)      { while (getchar ()!='\n'); break; } // достигнут предел для записи.
+        if (line[cur_pose-1]==' ') { while (getchar ()!='\n'); break; } // достигнут конец слова.
+        line[cur_pose] =  toupper (getchar ()); 
+    } while (line[cur_pose++]!='\n'); // основное условие завершения строки.
+    if (cur_pose==1) { strcpy (line, def); return line; } // пустой ввод вернет default.
+    line[cur_pose-1] = '\0';  
+    return line;
+}
+
+
+/* Специальный ввод символа. 
+ * prompt - приглашение,
+ * def - значение по умолчанию,
+ * purpose - целевые символы.
+ * */
+char get_key (const char *prompt, char def, const char *purpose) {
+    printf ("%s", prompt); // приглашение.
+    char key = get_specific (purpose);
+    if (key=='\n') { return  def; }
+    while (getchar ()!='\n');
+    return key;
+}
+
+/* Ввод последовательности чисел.
+ * prompt - приглашение,
+ * def - значение по умолчанию,
+ * count - количество читаемых чисел,
+ * ... - на каждое новое число min1, max1, min2, max2, ...
+ * */
+int *get_number_set (const char *prompt, const char *purpose, int count, int def, ...) {
+    printf ("%s", prompt); // приглашение.
+    int *set = (int*) malloc (count*sizeof (int)); if (NULL==set) { exit (1); }
+
+    va_list args;
+    va_start (args, def);
+
+    int cur_min; // минимум для текущего.
+    int cur_max; // максимум для текущего.
+
+    char *number_line; 
+    int length;
+    char cur_char;
+    int cur_cell = 0;
+
+    while (cur_cell<count) {
+        cur_min = va_arg (args, int);
+        cur_max = va_arg (args, int);
+        length = 1;
+        set[cur_cell] = def;
+        number_line = (char*) malloc (length*sizeof (char)); if (NULL==number_line) { exit (1); }
+        while ('\0'==(cur_char = get_specific (purpose)));
+        number_line[length-1] = cur_char;
+        while (cur_char!='\n' && cur_char!='\0') {
+            number_line[length-1] = cur_char;
+            cur_char = get_specific (purpose);
+            length++;
+            number_line = (char*) realloc (number_line, length*sizeof (char)); 
+            if (NULL==number_line) { exit (1); }
+            number_line[length-1] = '\0';
+        }
+        if ('\0'!=number_line[0])  { set[cur_cell] = atoi (number_line); }
+        if (set[cur_cell]>cur_max) { set[cur_cell] = cur_max; }
+        if (set[cur_cell]<cur_min) { set[cur_cell] = cur_min; }
+        
+        if ('\n'==number_line[0]) { 
+            while (cur_cell<count) { set[cur_cell++] = def; } 
+            free (number_line); 
+            return set;
+        }
+        cur_cell++;
+        if ('\n'==cur_char) { 
+            while (cur_cell<count) { set[cur_cell++] = def; }
+            free (number_line);
+            return set;
+        }
+        free (number_line);
+    }
+    if ('\0'==number_line[0]) { while (getchar ()!='\n'); }
+    va_end (args);
+    return set;
+}
+
