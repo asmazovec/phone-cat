@@ -26,7 +26,10 @@
 
 
 int main() {
-    printf ("Добро пожаловать в phbook util (util-linux phone book v1.0).\n");
+    printf ("Добро пожаловать в phbook util (util-linux phone book alfa v1.0).\n");
+    char *tmp_line;
+    int *tmp_number;
+    
     int cat_size = 1; // Размер каталога
     int cat_cur = 0;  // Текущий каталог
     bookpath *catalog = (bookpath*) malloc (cat_size*sizeof (bookpath)); if (NULL==catalog) { exit (1); } 
@@ -36,21 +39,24 @@ int main() {
 
     char key;
     char extra_key;
-    while ('Q'!=(key = get_key ("\n\nКоманда (? для справки): ", '\0', "\nQ?qwWfbpn"))) {
+    while ('Q'!=(key = get_key ("\n\nКоманда (? для справки): ", '\0', "\nQ?qwWfbpnudc"))) {
         switch (key) {
         case '?':
             help ();
             break;
         case 'q':
-            key = '\0';
-            key = get_key ("\nЗакрыть книгу без сохранения? (y/N): ", 'N', "\nyYnN");
+            key = get_key ("\nЗакрыть книгу без сохранения? (y/N): ", 'N', "\nyY");
             if ('y'==key || 'Y'==key) {
                 if (cat_size==1) { 
                     close_book (catalog[0].cur_book);
                     catalog[0].cur_book = init_book ();
-                    //upload_book (catalog[0].path, 256, catalog[0].cur_book); 
+                    catalog[0].path = "data/book.r";
+                    upload_book (catalog[0].path, 256, catalog[0].cur_book); 
                 } else { 
-                    close_path (cat_cur, catalog, &cat_size); 
+                    close_path (catalog, cat_size, cat_cur); 
+                    cat_cur--;
+                    cat_size--;
+                    catalog = (bookpath*) realloc (catalog, cat_size*sizeof (bookpath)); if (NULL==catalog) { exit (1); }
                 }
             } else { 
                 printf ("\nОтмена закрытия\n"); 
@@ -72,13 +78,58 @@ int main() {
             path_print_page (get_word ("\nБуква страницы: ", "", 256)[0], *catalog[cat_cur].cur_book, 15);
             break;
         case 'n':
-            path_add_record (get_word ("\nНовое имя: ", "", 256), get_number_set ("\nВведите номер: ", "\n0123456789", 4, 0, 0,9999, 0,999, 0,999, 0,9999), catalog[cat_cur].cur_book);
+            add_record (*path_ask_record ("", NULL, 15), catalog[cat_cur].cur_book);
             break;
-
+        case 'u':
+            path_update_record (catalog[cat_cur].cur_book);
+            break;
+        case 'd':
+            path_delete_record (catalog[cat_cur].cur_book);
+            break;
+        case 'c':
+            key = get_key ("\nКаталог: ", '\0', "\nocNnp");
+            switch (key) {
+            case 'o':
+                key = get_key ("\nЗакрыть книгу без сохранения? (y/N): ", 'N', "\nyY");
+                if ('y'==key || 'Y'==key) {
+                    close_book (catalog[0].cur_book);
+                    catalog[cat_cur].cur_book = init_book ();
+                    tmp_line = get_word ("\nРасположение книги (текущая директория по умолчанию): ", catalog[cat_cur].path, 256);
+                    catalog[cat_cur].path = tmp_line;
+                    upload_book (catalog[cat_cur].path, 256, catalog[cat_cur].cur_book); 
+                } else { 
+                    printf ("\nОтмена закрытия\n"); 
+                }
+                break;
+            case 'c':
+                for (int i = 0; i<cat_size; i++) {
+                    printf (" %c %d :: %s\n", (cat_cur==i)? '>': ' ', i+1, catalog[i].path);
+                }
+                break;
+            case 'N':
+                cat_size++;
+                catalog = (bookpath*) realloc (catalog ,cat_size*sizeof (bookpath));
+                cat_cur = cat_size-1;
+                catalog[cat_cur].cur_book = init_book ();
+                tmp_line = get_word ("\nРасположение книги (data/book.r по умолчанию): ", catalog[cat_cur].path, 256);
+                catalog[cat_cur].path = tmp_line;
+                upload_book (catalog[cat_cur].path, 256, catalog[cat_cur].cur_book); 
+                break;
+            case 'n':
+                cat_cur++; 
+                cat_cur = abs (cat_cur %= cat_size);
+                printf ("!!%d\n", cat_cur);
+                break;
+            case 'p':
+                cat_cur--;
+                cat_cur = abs (cat_cur %= cat_size);
+                printf ("!!%d\n", cat_cur);
+                break;
+            }
+            break;
         default:
             break;
         }
     }
     return 0;
 }
-

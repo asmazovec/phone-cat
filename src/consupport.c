@@ -109,6 +109,45 @@ char get_key (const char *prompt, char def, const char *purpose) {
     return key;
 }
 
+/* Выделяет из строки нужное число цифр.
+ * prompt - приглашение,
+ * def - заполнит недобранные цифры,
+ * count - ожидаемое число цифр.
+ * */
+int *get_sign_set (const char *prompt, int def, int count) {
+    printf ("%s", prompt); // приглашение
+    int *set = (int*) malloc (count*sizeof (int)); if (NULL==set) { exit (1); }
+
+    char cur_char = '\0';
+
+    int cur_sign = 0;
+    int num_sign = 0;
+    while (num_sign<count) {
+        set[num_sign] = def;
+        num_sign++;
+    }
+    
+    num_sign = 0;
+    do {
+        if (num_sign>=count) { while (getchar ()!='\n'); break; } // достигнут предел для записи.
+        cur_char = get_specific ("\n0123456789");
+        if (cur_char!='\0') {
+            if (cur_char=='0') { set[num_sign] = 0; }
+            if (cur_char=='1') { set[num_sign] = 1; }
+            if (cur_char=='2') { set[num_sign] = 2; }
+            if (cur_char=='3') { set[num_sign] = 3; }
+            if (cur_char=='4') { set[num_sign] = 4; }
+            if (cur_char=='5') { set[num_sign] = 5; }
+            if (cur_char=='6') { set[num_sign] = 6; }
+            if (cur_char=='7') { set[num_sign] = 7; }
+            if (cur_char=='8') { set[num_sign] = 8; }
+            if (cur_char=='9') { set[num_sign] = 9; }
+            num_sign++;
+        }
+    } while (cur_char!='\n'); // основное условие завершения строки.
+    return set;
+}
+
 /* Ввод последовательности чисел.
  * prompt - приглашение,
  * def - значение по умолчанию,

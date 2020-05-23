@@ -29,7 +29,7 @@ char *get_word_capital (const char *prompt, const char *def, int length);
 char get_key           (const char *prompt, char def, const char *purpose);
 
 /* Ввод последовательности чисел. */
+int *get_sign_set (const char *prompt, int def, int count);
 int *get_number_set (const char *prompt, const char *purpose, int count, int def, ...);
-
 
 #endif /* CONSUPPORT_H_ */
