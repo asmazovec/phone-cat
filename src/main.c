@@ -27,6 +27,7 @@
 
 int main() {
     printf ("Добро пожаловать в phbook util (util-linux phone book alfa v1.0).\n");
+    printf ("\nОткрыта книга по умолчанию data/book.r\n");
     char *tmp_line;
     int *tmp_number;
     
@@ -55,6 +56,7 @@ int main() {
                 } else { 
                     close_path (catalog, cat_size, cat_cur); 
                     cat_cur--;
+                    cat_cur = abs (cat_cur %= cat_size);
                     cat_size--;
                     catalog = (bookpath*) realloc (catalog, cat_size*sizeof (bookpath)); if (NULL==catalog) { exit (1); }
                 }
@@ -111,19 +113,17 @@ int main() {
                 catalog = (bookpath*) realloc (catalog ,cat_size*sizeof (bookpath));
                 cat_cur = cat_size-1;
                 catalog[cat_cur].cur_book = init_book ();
-                tmp_line = get_word ("\nРасположение книги (data/book.r по умолчанию): ", catalog[cat_cur].path, 256);
+                tmp_line = get_word ("\nРасположение книги (data/book.r по умолчанию): ", "data/book.r", 256);
                 catalog[cat_cur].path = tmp_line;
                 upload_book (catalog[cat_cur].path, 256, catalog[cat_cur].cur_book); 
                 break;
             case 'n':
                 cat_cur++; 
                 cat_cur = abs (cat_cur %= cat_size);
-                printf ("!!%d\n", cat_cur);
                 break;
             case 'p':
                 cat_cur--;
                 cat_cur = abs (cat_cur %= cat_size);
-                printf ("!!%d\n", cat_cur);
                 break;
             }
             break;
