@@ -37,29 +37,28 @@ int main() {
     char *tmp_line;
     int *tmp_number;
     
-    int cat_size = 1; // Р Р°Р·РјРµСЂ РєР°С‚Р°Р»РѕРіР°
-    int cat_cur = 0;  // РќРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ РєР°С‚Р°Р»РѕРіР°
+    int cat_size = 1; // Размер каталога
+    int cat_cur = 0;  // Номер текущего каталога
 
     bookpath *catalog = (bookpath*) malloc (cat_size*sizeof (bookpath)); if (NULL==catalog) { exit (1); } 
 
 #if defined (__gnu_linux__)
     def_path = "data/book.def";
-    printf ("Р”РѕР±СЂРѕ РїРѕР¶Р°Р»РѕРІР°С‚СЊ РІ \x1b[1;32mphone cat =^_^= util\x1b[0m (UTIL-Linux Phone Book %s).", version);
+    printf ("Добро пожаловать в \x1b[1;32mphone cat =^_^= util\x1b[0m (UTIL-Linux Phone Book %s).", version);
 
-    #define PROMPT printf ("\n\nРћС‚РєСЂС‹С‚Р°СЏ РєРЅРёРіР° \x1b[1m%s\x1b[0m\n", catalog[cat_cur].path);
+    #define PROMPT printf ("\n\nОткрытая книга \x1b[1m%s\x1b[0m\n", catalog[cat_cur].path);
 
 #elif defined (__WIN32__) || defined (__WIN64__)
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
     def_path = "data\\book.def.r";
-    printf ("Р”РѕР±СЂРѕ РїРѕР¶Р°Р»РѕРІР°С‚СЊ РІ phone cat =^_^= util (UTIL-Windows Phone %s).", version);
+    printf ("Добро пожаловать в phone cat =^_^= util (UTIL-Windows Phone %s).", version);
 
-    printf ("\n\nРџСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ! \nРљРѕРґРёСЂРѕРІРєР° UTF-8 РЅРµРєРѕСЂСЂРµРєС‚РЅРѕ СЂР°Р±РѕС‚Р°РµС‚ СЃРѕ РІРІРѕРґРѕРј СЂСѓСЃСЃРєРёС… СЃРёРјРІРѕР»РѕРІ.\n");
-    #define PROMPT printf ("\n\nРћС‚РєСЂС‹С‚Р°СЏ РєРЅРёРіР° %s\n", catalog[cat_cur].path);
+    #define PROMPT printf ("\n\nОткрытая книга %s\n", catalog[cat_cur].path);
 
 #else 
-    printf ("РќРµРёР·РІРµСЃС‚РЅР°СЏ РѕРїРµСЂР°С†РёРѕРЅРЅР°СЏ СЃРёСЃС‚РµРјР°.\n");
+    printf ("Неизвестная операционная система.\n");
     exit (2);
 
 #endif
@@ -72,7 +71,7 @@ int main() {
     char extra_key;
     while ('Q'!=key) {
         PROMPT;
-        key = get_key ("РљРѕРјР°РЅРґР° (? РґР»СЏ СЃРїСЂР°РІРєРё): ", '\0', "\n?hHoqQwWflbpnudc][");
+        key = get_key ("Команда (? для справки): ", '\0', "\n?hHoqQwWflbpnudc][");
         switch (key) {
         case '?':
             help ();
@@ -88,12 +87,12 @@ int main() {
             catalog = (bookpath*) realloc (catalog ,cat_size*sizeof (bookpath));
             cat_cur = cat_size-1;
             catalog[cat_cur].cur_book = init_book ();
-            tmp_line = get_word ("\nР Р°СЃРїРѕР»РѕР¶РµРЅРёРµ РєРЅРёРіРё : ", def_path, 256);
+            tmp_line = get_word ("\nРасположение книги : ", def_path, 256);
             catalog[cat_cur].path = tmp_line;
             upload_book (catalog[cat_cur].path, 256, catalog[cat_cur].cur_book); 
             break;
         case 'q':
-            key = get_key ("\nР—Р°РєСЂС‹С‚СЊ РєРЅРёРіСѓ Р±РµР· СЃРѕС…СЂР°РЅРµРЅРёСЏ? (y/N): ", 'N', "\nyY");
+            key = get_key ("\nЗакрыть книгу без сохранения? (y/N): ", 'N', "\nyY");
             if ('y'==key || 'Y'==key) {
                 if (cat_size==1) { 
                     close_book (catalog[0].cur_book);
@@ -108,23 +107,23 @@ int main() {
                     catalog = (bookpath*) realloc (catalog, cat_size*sizeof (bookpath)); if (NULL==catalog) { exit (1); }
                 }
             } else { 
-                printf ("\nРћС‚РјРµРЅР° Р·Р°РєСЂС‹С‚РёСЏ\n"); 
+                printf ("\nОтмена закрытия\n"); 
             }
             break;
         case 'w':
             write_book (*catalog[cat_cur].cur_book, catalog[cat_cur].path);
             break;
         case 'W':
-            write_book (*catalog[cat_cur].cur_book, get_word ("\nРљР°С‚Р°Р»РѕРі РґР»СЏ Р·Р°РїРёСЃРё (С‚РµРєСѓС‰РёР№ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ): ", catalog[cat_cur].path, 256));
+            write_book (*catalog[cat_cur].cur_book, get_word ("\nКаталог для записи (текущий по умолчанию): ", catalog[cat_cur].path, 256));
             break;
         case 'f':
-            print_nickname (get_line ("\nРџРѕРёСЃРє РїРѕ С‡Р°СЃС‚Рё РёРјРµРЅРё: ", "", 256), *catalog[cat_cur].cur_book, 15);
+            print_nickname (get_line ("\nПоиск по части имени: ", "", 256), *catalog[cat_cur].cur_book, 15);
             break;
         case 'b':
             print_book (*catalog[cat_cur].cur_book, 15);
             break;
         case 'p':
-            path_print_page (get_word ("\nР‘СѓРєРІР° СЃС‚СЂР°РЅРёС†С‹: ", "", 256)[0], *catalog[cat_cur].cur_book, 15);
+            path_print_page (get_word ("\nБуква страницы: ", "", 256)[0], *catalog[cat_cur].cur_book, 15);
             break;
         case 'n':
             add_record (*path_ask_record ("", NULL, 15), catalog[cat_cur].cur_book);
