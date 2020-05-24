@@ -1,7 +1,7 @@
 # PhoneCat =^_^= (Phone Catalog) версия 1.0 release
 Учебный проект электронная телефонная книга на Си
 
-![Скрин на linux]()
+![Скрин на linux](https://github.com/asmazovec/prog.sem2.8/blob/master/screenshots/screen1.png)
 
 ## Компиляция
 
@@ -17,8 +17,8 @@
 
 ## Реализованные заголовочные файлы
 
-- [consupport.h] ()
-- [phonebook.h] ()
+- [consupport.h](https://github.com/asmazovec/prog.sem2.8/blob/master/man/consupport.h.md)
+- [phonebook.h](https://github.com/asmazovec/prog.sem2.8/blob/master/man/phonebook.h.md)
 
 ## Возможности
 
