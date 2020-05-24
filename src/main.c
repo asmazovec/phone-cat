@@ -43,7 +43,7 @@ int main() {
     bookpath *catalog = (bookpath*) malloc (cat_size*sizeof (bookpath)); if (NULL==catalog) { exit (1); } 
 
 #if defined (__gnu_linux__)
-    def_path = "data/book.def";
+    def_path = "data/book.def.r";
     printf ("Добро пожаловать в \x1b[1;32mphone cat =^_^= util\x1b[0m (UTIL-Linux Phone Book %s).", version);
 
     #define PROMPT printf ("\n\nОткрытая книга \x1b[1m%s\x1b[0m\n", catalog[cat_cur].path);
