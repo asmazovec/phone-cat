@@ -2,7 +2,17 @@
 
 Помощник считывания данных из консоли.
 
+- [get_specific ()](#get_specific)
+- [get_line ()](#get_line)
+- [get_line_capital ()](#get_line_capital)
+- [get_word ()](#get_word)
+- [get_word_capital ()](#get_word_capital)
+- [get_key ()](#get_key)
+- [get_sign_set ()](#get_sign_set)
+- [get_number_set ()](#get_number_set)
+
 ---
+<a name="get_specific"></a>
 
 `char get_specific (const char *purpose)` 
 
@@ -17,6 +27,7 @@
 вернет `'\0'`.
 
 ---
+<a name="get_line"></a>
 
 `char *get_line (const char *promt, const char *def, int length)`
 
@@ -30,6 +41,7 @@
 def.
 
 ---
+<a name="get_line_capital"></a>
 
 `char *get_line_capital (const char *promt, const char *def, int length)`
 
@@ -44,6 +56,7 @@ def.
 def.
 
 ---
+<a name="get_word"></a>
 
 `char *get_word (const char *promt, const char *def, int length)`
 
@@ -57,6 +70,7 @@ def.
 def.
 
 ---
+<a name="get_word_capital"></a>
 
 `char *get_word_capital (const char *promt, const char *def, int length)`
 
@@ -71,6 +85,7 @@ def.
 def.
 
 ---
+<a name="get_key"></a>
 
 `char get_key (const char *promt, char def, const char *purpose)`
 
@@ -85,6 +100,7 @@ def.
 `'\0'`, иначе вернет считанный символ.
 
 ---
+<a name="get_sign_set"></a>
 
 `int *get_sign_set (const char *prompt, int def, int count)`
 
@@ -97,6 +113,7 @@ def.
 значениями по умолчанию.
 
 ---
+<a name="get_number_set"></a>
 
 `int *get_number_set (const char *prompt, const char *purpose, int
     count, int def, ...)`
