@@ -17,8 +17,8 @@
 
 ## Реализованные заголовочные файлы
 
-- [consupport.h](https://github.com/asmazovec/prog.sem2.8/blob/master/man/consupport.h.md)
-- [phonebook.h](https://github.com/asmazovec/prog.sem2.8/blob/master/man/phonebook.h.md)
+- [consupport.h](https://github.com/asmazovec/prog.sem2.8/blob/master/man/consupport.h.md) справка по заголовочному файлу, реализующему общение с пользвателем посредством коммандной строки;
+- [phonebook.h](https://github.com/asmazovec/prog.sem2.8/blob/master/man/phonebook.h.md) справка по заголовочному файлу, реализуещему структуру телефонной книги;
 
 ## Возможности
 
