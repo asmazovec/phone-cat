@@ -1,3 +1,0 @@
-0008-732-942-8966 Alex
-0008-962-781-3879 Alexander
-0008-293-833-2222 Nikolay Vasilievich 

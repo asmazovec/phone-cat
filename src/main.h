@@ -28,7 +28,7 @@ record *path_ask_record (const char *def_name, phone *def_phone, int size) {
     int *number;
 
     if (def_name[0]=='\0') {
-        new_name = get_line ("\nНовое имя: ", "", 256); 
+        new_name = get_line ("\nНовое имя: ", "?NoName", 256); 
     } else {
         new_name = get_line ("\nНовое имя   (enter - пропустить): ", def_name, 256); 
     }
@@ -100,7 +100,7 @@ int path_print_page (char character, book cur_book, int size) {
 }
 
 int path_update_record (book *cur_book) {
-    char *line = get_line ("\nПоиск записи (enter - отмена): ", "", 256);
+    char *line = get_line ("\nПоиск записи по части имени (enter - отмена): ", "", 256);
     if (line[0]=='\0') { printf ("\nОтмена редактирования\n"); return 1; }
     record *new_record;
 
@@ -115,9 +115,10 @@ int path_update_record (book *cur_book) {
     }
     free (line);
     if (i==0) {
-        printf ("\nЗаписи с таким именем не существует\n");
+        printf ("\nВы ошиблись при вводе или записи с таким именем не существует\n");
     } else if (i==1) {
         new_record = path_ask_record (f_records[0]->nickname, &f_records[0]->phonenumber, 15); 
+        update_record (f_records[0], cur_book, new_record->nickname, new_record->phonenumber);
     } else {
         cur = *get_number_set ("\nНомер записи из списка (enter - отмена): ", "\n0123456789", 1, 0, 0, i+1);
         if (cur<1 || cur>i) { printf ("\nОтмена редактирования\n"); return 1; }
@@ -129,7 +130,7 @@ int path_update_record (book *cur_book) {
 }
 
 int path_delete_record (book *cur_book) {
-    char *line = get_line ("\nПоиск записи (enter - отмена): ", "", 256);
+    char *line = get_line ("\nПоиск записи по части имени (enter - отмена): ", "", 256);
     if (line[0]=='\0') { printf ("\nОтмена удаления\n"); return 1; }
     record *new_record;
 
@@ -147,7 +148,7 @@ int path_delete_record (book *cur_book) {
     book *cur_page;
     char key;
     if (i==0) {
-        printf ("\nЗаписи с таким именем не существует\n");
+        printf ("\nВы ошиблись при вводе или записи с таким именем не существует\n");
     } else if (i==1) {
         key = get_key ("\nУдалить запись? (y/N): ", 'N', "\nyY");
         if ('y'==key || 'Y'==key) {
@@ -172,35 +173,74 @@ int path_delete_record (book *cur_book) {
 }
 
 int help (void) {
+#if defined (__gnu_linux__)
     return printf (
             "\n"
             "Справка:\n"
             "\n"
+            "\x1b[1;32m  Страница проекта: https://github.com/asmazovec/prog.sem2.8 \x1b[0m\n"
+            "\n"
+            "   ?   вывод этого списка\n"
+            "\n"
+            "\x1b[1m  Сохранение и выход \x1b[0m \n"
+            "   o   открыть новую книгу (добавит книгу в каталог)\n"
+            "   q   закрыть книгу без сохранения\n"
+            "   Q   закрыть все книги в каталоге и выйти\n"
+            "   w   сохранить книгу\n"
+            "   W   сохранить книгу как\n"
+            "\n"
+            "\x1b[1m  Поиск \x1b[0m \n"
+            "   f   поиск по имени (можно ввести неполное имя)\n"
+            "   b   просмотр всех записей в книге\n"
+            "   p   просмотр всех записей на странице\n"
+            "\n"
+            "\x1b[1m  Редактирование \x1b[0m \n"
+            "   n   новая запись\n"
+            "   u   редактировать запись\n"
+            "   d   удалить запись\n"
+            "\n"
+            "\x1b[1m  Каталог открытых книг \x1b[0m \n"
+            "   c   просмотр каталога открытых книг\n"
+            "   ]   переход к следующей книге из каталога\n"
+            "   [   переход к предыдущей книге из каталога\n"
+            );
+#elif defined (__WIN32__) || defined (__WIN64__)
+    return printf (
+            "\n"
+            "Справка:\n"
+            "\n"
+            "  Страница проекта: https://github.com/asmazovec/prog.sem2.8\n"
+            "\n"
             "   ?   вывод этого списка\n"
             "\n"
             "  Сохранение и выход\n"
+            "   o   открыть новую книгу (добавит книгу в каталог)\n"
             "   q   закрыть книгу без сохранения\n"
-            "   Q   закрыть всё и выйти\n"
+            "   Q   закрыть все книги в каталоге и выйти\n"
             "   w   сохранить книгу\n"
             "   W   сохранить книгу как\n"
             "\n"
             "  Поиск\n"
-            "   f   по имени\n"
-            "   b   распечатать книгу\n"
-            "   p   распечатать страницу\n"
+            "   f   поиск по имени (можно ввести неполное имя)\n"
+            "   b   просмотр всех записей в книге\n"
+            "   p   просмотр всех записей на странице\n"
             "\n"
             "  Редактирование\n"
             "   n   новая запись\n"
             "   u   редактировать запись\n"
             "   d   удалить запись\n"
             "\n"
-            "  Каталог\n"
-            "   c   > o   открыть книгу\n"
-            "       > c   книги в рабочем каталоге\n"
-            "       > N   добавить книгу в рабочий каталог\n"
-            "       > n   перейти к следующей книге в каталоге\n"
-            "       > p   перейти к предыдущей книге в каталоге\n"
+            "  Каталог открытых книг\n"
+            "   c   просмотр каталога открытых книг\n"
+            "   ]   переход к следующей книге из каталога\n"
+            "   [   переход к предыдущей книге из каталога\n"
             );
+    
+
+#else
+    return 0;
+
+#endif
 }
 
 

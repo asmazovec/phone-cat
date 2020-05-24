@@ -24,26 +24,65 @@
 #include "consupport.h"
 #include "main.h"
 
+char *version = "beta v1.0";
+
 
 int main() {
-    printf ("Добро пожаловать в phbook util (util-linux phone book alfa v1.0).\n");
-    printf ("\nОткрыта книга по умолчанию data/book.r\n");
+    char *def_path;
+
     char *tmp_line;
     int *tmp_number;
     
     int cat_size = 1; // Размер каталога
-    int cat_cur = 0;  // Текущий каталог
+    int cat_cur = 0;  // Номер текущего каталога
+
     bookpath *catalog = (bookpath*) malloc (cat_size*sizeof (bookpath)); if (NULL==catalog) { exit (1); } 
-    catalog[0].path = "data/book.r";
+
+#if defined (__gnu_linux__)
+    def_path = "data/book.def";
+    printf ("Добро пожаловать в \x1b[1;32mphone cat =^_^= util\x1b[0m (UTIL-Linux Phone Book %s).", version);
+
+    #define PROMPT printf ("\n\nОткрытая книга \x1b[1m%s\x1b[0m\n", catalog[cat_cur].path);
+
+#elif defined (__WIN32__) || defined (__WIN64__)
+    def_path = "data\\book.def"
+    printf ("Добро пожаловать в phone cat =^_^= util (UTIL-Windows Phone %s).", version);
+
+    #define PROMPT printf ("\n\nОткрытая книга %s\n", catalog[cat_cur].path);
+
+#else 
+    printf ("Неизвестная операционная система.\n");
+    exit (2);
+
+#endif
+
     catalog[0].cur_book = init_book ();
+    catalog[0].path = def_path;
     upload_book (catalog[0].path, 256, catalog[0].cur_book);
 
-    char key;
+    char key = '\0';
     char extra_key;
-    while ('Q'!=(key = get_key ("\n\nКоманда (? для справки): ", '\0', "\nQ?qwWfbpnudc"))) {
+    while ('Q'!=key) {
+        PROMPT;
+        key = get_key ("Команда (? для справки): ", '\0', "\n?hHoqQwWflbpnudc][");
         switch (key) {
         case '?':
             help ();
+            break;
+        case 'h':
+            help ();
+            break;
+        case 'H':
+            help ();
+            break;
+        case 'o':
+            cat_size++;
+            catalog = (bookpath*) realloc (catalog ,cat_size*sizeof (bookpath));
+            cat_cur = cat_size-1;
+            catalog[cat_cur].cur_book = init_book ();
+            tmp_line = get_word ("\nРасположение книги : ", def_path, 256);
+            catalog[cat_cur].path = tmp_line;
+            upload_book (catalog[cat_cur].path, 256, catalog[cat_cur].cur_book); 
             break;
         case 'q':
             key = get_key ("\nЗакрыть книгу без сохранения? (y/N): ", 'N', "\nyY");
@@ -51,13 +90,13 @@ int main() {
                 if (cat_size==1) { 
                     close_book (catalog[0].cur_book);
                     catalog[0].cur_book = init_book ();
-                    catalog[0].path = "data/book.r";
+                    catalog[0].path = def_path;
                     upload_book (catalog[0].path, 256, catalog[0].cur_book); 
                 } else { 
                     close_path (catalog, cat_size, cat_cur); 
                     cat_cur--;
-                    cat_cur = abs (cat_cur %= cat_size);
                     cat_size--;
+                    cat_cur = abs (cat_cur %= cat_size);
                     catalog = (bookpath*) realloc (catalog, cat_size*sizeof (bookpath)); if (NULL==catalog) { exit (1); }
                 }
             } else { 
@@ -89,47 +128,24 @@ int main() {
             path_delete_record (catalog[cat_cur].cur_book);
             break;
         case 'c':
-            key = get_key ("\nКаталог: ", '\0', "\nocNnp");
-            switch (key) {
-            case 'o':
-                key = get_key ("\nЗакрыть книгу без сохранения? (y/N): ", 'N', "\nyY");
-                if ('y'==key || 'Y'==key) {
-                    close_book (catalog[0].cur_book);
-                    catalog[cat_cur].cur_book = init_book ();
-                    tmp_line = get_word ("\nРасположение книги (текущая директория по умолчанию): ", catalog[cat_cur].path, 256);
-                    catalog[cat_cur].path = tmp_line;
-                    upload_book (catalog[cat_cur].path, 256, catalog[cat_cur].cur_book); 
-                } else { 
-                    printf ("\nОтмена закрытия\n"); 
-                }
-                break;
-            case 'c':
-                for (int i = 0; i<cat_size; i++) {
-                    printf (" %c %d :: %s\n", (cat_cur==i)? '>': ' ', i+1, catalog[i].path);
-                }
-                break;
-            case 'N':
-                cat_size++;
-                catalog = (bookpath*) realloc (catalog ,cat_size*sizeof (bookpath));
-                cat_cur = cat_size-1;
-                catalog[cat_cur].cur_book = init_book ();
-                tmp_line = get_word ("\nРасположение книги (data/book.r по умолчанию): ", "data/book.r", 256);
-                catalog[cat_cur].path = tmp_line;
-                upload_book (catalog[cat_cur].path, 256, catalog[cat_cur].cur_book); 
-                break;
-            case 'n':
-                cat_cur++; 
-                cat_cur = abs (cat_cur %= cat_size);
-                break;
-            case 'p':
-                cat_cur--;
-                cat_cur = abs (cat_cur %= cat_size);
-                break;
+            for (int i = 0; i<cat_size; i++) {
+                printf (" %c %d :: %s\n", (cat_cur==i)? '>': ' ', i+1, catalog[i].path);
             }
+            break;
+        case ']':
+            cat_cur++; 
+            cat_cur = abs (cat_cur %= cat_size);
+            break;
+        case '[':
+            cat_cur--;
+            cat_cur = abs (cat_cur %= cat_size);
             break;
         default:
             break;
         }
     }
+    printf ("\n");
     return 0;
 }
+
+
