@@ -28,7 +28,7 @@
 #include <Windows.h>
 #endif
 
-char *version = "beta v1.0";
+char *version = "v1.0 release";
 
 
 int main() {
