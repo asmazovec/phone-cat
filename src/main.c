@@ -110,7 +110,7 @@ int main() {
             write_book (*catalog[cat_cur].cur_book, get_word ("\nКаталог для записи (текущий по умолчанию): ", catalog[cat_cur].path, 256));
             break;
         case 'f':
-            print_nickname (get_line ("\nПоиск по имени: ", "", 256), *catalog[cat_cur].cur_book, 15);
+            print_nickname (get_line ("\nПоиск по части имени: ", "", 256), *catalog[cat_cur].cur_book, 15);
             break;
         case 'b':
             print_book (*catalog[cat_cur].cur_book, 15);
