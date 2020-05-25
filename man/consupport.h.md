@@ -2,6 +2,8 @@
 
 Помощник считывания данных из консоли.
 
+На главную [phonecat](https://github.com/asmazovec/prog.sem2.8)
+
 - [get_specific ()](#get_specific)
 - [get_line ()](#get_line)
 - [get_line_capital ()](#get_line_capital)

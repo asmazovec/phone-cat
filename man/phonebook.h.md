@@ -2,9 +2,11 @@
 
 Заголовочный файл реализует структуру телефонной книги.
 
-- [structure phone](#phone)
-- [structure record](#record)
-- [structure book](#book)
+На главную [phonecat](https://github.com/asmazovec/prog.sem2.8)
+
+- [structure phone](#s_phone)
+- [structure record](#s_record)
+- [structure book](#s_book)
 
 ## phone
 - [get_phone ()](#get_phone)
@@ -33,33 +35,41 @@
 - [write_book ()](#write_book)
 
 ---
-<a name="phone"></a>
+<a name="s_phone"></a>
 ```C
 typedef struct {        
-    int locale;         /// Международный идентификатор (4 - 1 символ).
-    int service;        /// Код услуги (3 символа).
-    int provider;       /// Код поставщика услуги (3 символа). 
-    int abonent;        /// Идентификатор абонента (4 символа).
+    int locale;
+    int service;
+    int provider;
+    int abonent;
 } phone;
 ```
 
-Номер телефона. 
+- `locale` - международный идентификатор номера (1 - 4 символа);
+- `service` - код услуги (3 символа);
+- `provider` - код поставщика услуги (3 символа);
+- `abonent` - идентификатор абонента (4 символа);
 
+Структура номера телефона. 
 
 ---
-<a name="record"></a>
+<a name="s_record"></a>
 ```C
 typedef struct record {     
-    char* nickname;     /// Псевдоним владельца номера телефона.  
-    phone phonenumber;  /// Номер телефона.
-    struct record *next;/// Указатель на следующую запись на странице.
+    char* nickname;
+    phone phonenumber;
+    struct record *next;
 } record;
 ```
 
-Структура записи в книге.
+- `nickname` - псевдоним владельца номера телефона;
+- `phonenumber` - номер телефона;
+- `next` - указатель на следующую запись на странице;
+
+Структура записи на странице книги.
 
 ---
-<a name="book"></a>
+<a name="s_book"></a>
 ```C
 typedef struct book {
     char character;     /// Буква текущей страницы книги.
@@ -68,6 +78,11 @@ typedef struct book {
     struct book *prev;  /// указатель на предыдущую страницу книги.
 } book;
 ```
+
+- `character` - буква текущей страницы книги;
+- `node` - первая запись на странице, инициализирует страницу;
+- `next` - указатель на следующую страницу книги;
+- `prev` - указатель на предыдущую страницу книги;
 
 Структура телефонной книги.
 
