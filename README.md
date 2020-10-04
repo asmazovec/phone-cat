@@ -6,7 +6,7 @@
 ## Компиляция
 
 - `make.gnu_linux.sh` на Linux;
-- `make.windows.bat` на Windows;
+- `make.windows.bat` на Windows.
 
 ## Запуск
 
